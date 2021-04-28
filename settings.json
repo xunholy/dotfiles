@@ -1,0 +1,36 @@
+{
+  "window.zoomLevel": 0,
+  "go.autocompleteUnimportedPackages": true,
+  "go.lintTool": "golangci-lint",
+  "go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
+  "go.useLanguageServer": true,
+  "go.useCodeSnippetsOnFunctionSuggest": true,
+  "go.coverOnSingleTest": true,
+  "cloudcode.yaml.format.singleQuote": true,
+  "cloudcode.yaml.format.enable": true,
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "files.trimTrailingWhitespace": true,
+  "editor.tabSize": 2,
+  "yaml.customTags": [],
+  "files.insertFinalNewline": true,
+  "files.associations": {
+    "*.yaml": "yaml",
+    "*.yml": "yaml"
+  },
+  "cSpell.enableFiletypes": [
+    "ansible"
+  ],
+  "editor.detectIndentation": false,
+  "editor.formatOnSave": true,
+  "workbench.iconTheme": "vscode-icons",
+  "json.format.enable": false,
+  "yaml.format.singleQuote": true,
+  "workbench.editorAssociations": [
+    {
+      "viewType": "jupyter.notebook.ipynb",
+      "filenamePattern": "*.ipynb"
+    }
+  ]
+}

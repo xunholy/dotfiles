@@ -1,12 +1,17 @@
-{{- $email := promptString "email" -}}
-{{- $name := promptString "name" -}}
 {{- $personal := promptBool "Is this a personal device? (y/n)" -}}
 {{- $work := promptBool "Is this a work device? (y/n)" -}}
 
 format: yaml
-
 data:
-  name: "{{ $name }}"
-  email: "{{ $email }}"
-  personal: "{{ $personal }}"
-  work: "{{ $work }}"
+  name: "{{ promptString "name" }}"
+  email: "{{ promptString "email" }}"
+  personal: "{{ .personal }}"
+  work: "{{ .work }}"
+
+encryption: "gpg"
+gpg:
+  {{- if .personal }}
+  recipient: "53E1B83E784D63020F6DC694F3764787E5D54C75"
+  {{- else if .work }}
+  recipient: ""
+  {{- end }}

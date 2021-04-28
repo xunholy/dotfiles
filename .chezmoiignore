@@ -1,3 +1,4 @@
 # Ignore files & Directories
 oh-my-zsh-master.tar.gz
 Makefile
+settings.json
