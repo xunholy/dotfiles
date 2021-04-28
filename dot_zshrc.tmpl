@@ -121,13 +121,13 @@ export NVM_DIR="$HOME/.nvm"
 export EDITOR='code --wait'
 
 # Proxy Settings
-export http_proxy=http://localhost:3128
-export https_proxy=http://localhost:3128
-export ftp_proxy=http://localhost:3128
-export HTTP_PROXY=http://localhost:3128
-export HTTPS_PROXY=http://localhost:3128
-export FTP_PROXY=http://localhost:3128
-export ALL_PROXY=http://localhost:3128
+export http_proxy={{ .proxy }}
+export https_proxy={{ .proxy }}
+export ftp_proxy={{ .proxy }}
+export HTTP_PROXY={{ .proxy }}
+export HTTPS_PROXY={{ .proxy }}
+export FTP_PROXY={{ .proxy }}
+export ALL_PROXY={{ .proxy }}
 
 # Setting GPG TTY - Git Signing
 export GPG_TTY=$(tty)

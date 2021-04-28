@@ -1,13 +1,11 @@
-[hub]
-	host = github.service.anz
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
 	signingkey = 209A53071C757AF5
 [http]
-	proxy = localhost:3128
+	proxy = {{ .proxy }}
 [https]
-	proxy = localhost:3128
+	proxy = {{ .proxy }}
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
 [commit]
