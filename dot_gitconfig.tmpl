@@ -1,0 +1,25 @@
+[hub]
+	host = github.service.anz
+[user]
+	email = {{ .email }}
+	name = {{ .name }}
+	signingkey = 209A53071C757AF5
+[http]
+	proxy = localhost:3128
+[https]
+	proxy = localhost:3128
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[commit]
+	gpgsign = true
+[gpg]
+	program = gpg
+[format]
+	signOff = true
+[tag]
+	gpgSign = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

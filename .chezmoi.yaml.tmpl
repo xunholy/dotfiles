@@ -1,0 +1,12 @@
+{{- $email := promptString "email" -}}
+{{- $name := promptString "name" -}}
+{{- $personal := promptBool "Is this a personal device? (y/n)" -}}
+{{- $work := promptBool "Is this a work device? (y/n)" -}}
+
+format: yaml
+
+data:
+  name: "{{ $name }}"
+  email: "{{ $email }}"
+  personal: "{{ $personal }}"
+  work: "{{ $work }}"
