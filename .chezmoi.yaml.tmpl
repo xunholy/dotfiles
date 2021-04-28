@@ -14,5 +14,5 @@ gpg:
   {{- if .personal }}
   recipient: "53E1B83E784D63020F6DC694F3764787E5D54C75"
   {{- else if .work }}
-  recipient: ""
+  recipient: "{{ promptString "work gpg key" }}"
   {{- end }}

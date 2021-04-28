@@ -1,4 +1,9 @@
-# Ignore files & Directories
+# Ignore Directories
+.github/
+
+# Ignore files
 oh-my-zsh-master.tar.gz
 Makefile
 settings.json
+Taskfile.yml
+README.md
