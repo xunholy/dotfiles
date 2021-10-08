@@ -2,5 +2,5 @@
 
 {{- if (eq .chezmoi.os "darwin") }}
 type brew &>/dev/null || curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
-brew bundle --file ~/Brewfile
+brew bundle --file $(chezmoi source-path)/Brewfile
 {{- end }}
