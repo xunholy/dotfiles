@@ -2,8 +2,9 @@
 .github/
 
 # Ignore files
-oh-my-zsh-master.tar.gz
+Brewfile
 Makefile
+oh-my-zsh-master.tar.gz
+README.md
 settings.json
 Taskfile.yml
-README.md
