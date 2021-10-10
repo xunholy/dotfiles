@@ -116,5 +116,11 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # Requred to activate fzf from Homebrew installation
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/fornarom/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fornarom/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/fornarom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/fornarom/google-cloud-sdk/completion.zsh.inc'; fi
+
 # Auto updates will cause the ~/.oh-my-zsh directory to drift out of sync with chezmoi’s source state.
 DISABLE_AUTO_UPDATE="true"
