@@ -15,10 +15,10 @@ export EDITOR='code --wait'
 export GPG_TTY=$(tty)
 
 # Set PATH to GOPATH/bin
-export PATH=$PATH:$(go env GOPATH)/bin
+# export PATH=$PATH:$(go env GOPATH)/bin
 
 # Add Visual Studio Code (code)
-export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+# export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
 # Configure global proxy settings
 export http_proxy=http://{{ .proxy }}
