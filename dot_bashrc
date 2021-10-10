@@ -1,0 +1,17 @@
+# xUnholy Bash Config
+# .bashrc
+
+# SOPS will use VS Code
+export EDITOR='code --wait'
+
+# Setting GPG TTY - Git Signing
+export GPG_TTY=$(tty)
+
+# Proxy Settings
+export http_proxy=http://{{ .proxy }}
+export https_proxy=http://{{ .proxy }}
+export ftp_proxy=http://{{ .proxy }}
+export HTTP_PROXY=http://{{ .proxy }}
+export HTTPS_PROXY=http://{{ .proxy }}
+export FTP_PROXY=http://{{ .proxy }}
+export ALL_PROXY=http://{{ .proxy }}
