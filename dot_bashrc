@@ -7,6 +7,9 @@ export EDITOR='code --wait'
 # Setting GPG TTY - Git Signing
 export GPG_TTY=$(tty)
 
+# Set PATH to GOPATH/bin
+export PATH=$PATH:$(go env GOPATH)/bin
+
 # Proxy Settings
 export http_proxy=http://{{ .proxy }}
 export https_proxy=http://{{ .proxy }}

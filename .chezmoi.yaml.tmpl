@@ -3,16 +3,10 @@
 
 format: yaml
 data:
-  name: "{{ promptString "name" }}"
-  email: "{{ promptString "email" }}"
-  personal: "{{ .personal }}"
-  work: "{{ .work }}"
+  name: "Michael Fornaro"
+  email: "20387402+xUnholy@users.noreply.github.com"
   proxy: "localhost:3128"
 
 encryption: "gpg"
 gpg:
-  {{- if .personal }}
   recipient: "53E1B83E784D63020F6DC694F3764787E5D54C75"
-  {{- else if .work }}
-  recipient: "{{ promptString "work gpg key" }}"
-  {{- end }}
