@@ -1,5 +1,6 @@
 tap "fluxcd/tap"
 tap "hashicorp/tap"
+tap "go-task/tap"
 tap "instrumenta/instrumenta"
 brew "ansible"
 brew "bash-completion"
