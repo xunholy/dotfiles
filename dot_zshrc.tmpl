@@ -115,3 +115,6 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Requred to activate fzf from Homebrew installation
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Auto updates will cause the ~/.oh-my-zsh directory to drift out of sync with chezmoi’s source state.
+DISABLE_AUTO_UPDATE="true"
