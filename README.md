@@ -18,3 +18,7 @@ Steps:
 ```bash
 chezmoi init --apply xunholy
 ```
+
+```
+sh -c "$(curl -fsLS git.io/chezmoi)" -- init --apply <github-username>
+```
