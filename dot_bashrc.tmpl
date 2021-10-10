@@ -3,6 +3,7 @@
 
 {{ if eq .chezmoi.os "darwin" -}}
 # macOS .bashrc contents
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 {{ else if eq .chezmoi.os "linux" -}}
 # Linux .bashrc contents
 {{ end -}}
