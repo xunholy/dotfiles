@@ -125,5 +125,29 @@ if [ -f '/Users/fornarom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/
 # Auto updates will cause the ~/.oh-my-zsh directory to drift out of sync with chezmoi’s source state.
 DISABLE_AUTO_UPDATE="true"
 
-# Load .bash_profile configuration
-source ~/.bash_profile
+# User specific environment and startup programs
+export PATH=$PATH:$HOME/.local/bin:$HOME/bin
+
+# Set homebrew in PATH
+export PATH=$PATH:/opt/homebrew/bin
+
+# SOPS will use VS Code
+export EDITOR='code --wait'
+
+# Setting GPG TTY - Git Signing
+export GPG_TTY=$(tty)
+
+# Set PATH to GOPATH/bin
+# export PATH=$PATH:$(go env GOPATH)/bin
+
+# Add Visual Studio Code (code)
+# export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+
+# Configure global proxy settings
+export http_proxy=http://{{ .proxy }}
+export https_proxy=http://{{ .proxy }}
+export ftp_proxy=http://{{ .proxy }}
+export HTTP_PROXY=http://{{ .proxy }}
+export HTTPS_PROXY=http://{{ .proxy }}
+export FTP_PROXY=http://{{ .proxy }}
+export ALL_PROXY=http://{{ .proxy }}
