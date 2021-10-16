@@ -1,6 +1,9 @@
 Host *
   AddKeysToAgent yes
+{{- if (eq .chezmoi.os "darwin") }}
+  IgnoreUnkown UseKeychain
   UseKeychain yes
+{{- end }}
   IdentityFile ~/.ssh/id_ed25519
 
 Host 192.168.*

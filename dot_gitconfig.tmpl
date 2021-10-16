@@ -11,7 +11,11 @@
 [commit]
 	gpgsign = true
 [gpg]
-	program = gpg
+{{- if eq .chezmoi.os "darwin" }}
+    program = /usr/local/bin/gpg
+{{- else if eq .chezmoi.os "linux" }}
+    program = /usr/bin/gpg
+{{- end }}
 [format]
 	signOff = true
 [tag]
@@ -21,3 +25,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[init]
+    defaultBranch = main
