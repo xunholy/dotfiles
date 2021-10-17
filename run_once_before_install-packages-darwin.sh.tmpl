@@ -1,3 +1,9 @@
+{{- if (eq .chezmoi.os "darwin") -}}
+#!/bin/bash
+
+type brew &> /dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew bundle --no-lock --file=/dev/stdin <<EOF
 tap "fluxcd/tap"
 tap "hashicorp/tap"
 tap "go-task/tap"
@@ -34,3 +40,5 @@ brew "yamllint"
 brew "yq"
 brew "zsh"
 brew "zsh-syntax-highlighting"
+EOF
+{{ end -}}
