@@ -9,7 +9,7 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/fornarom/.oh-my-zsh"
+export ZSH="{{ .chezmoi.homeDir }}/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -117,10 +117,10 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/fornarom/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fornarom/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/fornarom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/fornarom/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc'; fi
 
 # Auto updates will cause the ~/.oh-my-zsh directory to drift out of sync with chezmoi’s source state.
 DISABLE_AUTO_UPDATE="true"
@@ -144,13 +144,13 @@ export GPG_TTY=$(tty)
 # export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
 # Configure global proxy settings
-export http_proxy=http://{{ .proxy }}
-export https_proxy=http://{{ .proxy }}
-export ftp_proxy=http://{{ .proxy }}
-export HTTP_PROXY=http://{{ .proxy }}
-export HTTPS_PROXY=http://{{ .proxy }}
-export FTP_PROXY=http://{{ .proxy }}
-export ALL_PROXY=http://{{ .proxy }}
+export http_proxy=http://{{ .proxy.url }}
+export https_proxy=http://{{ .proxy.url }}
+export ftp_proxy=http://{{ .proxy.url }}
+export HTTP_PROXY=http://{{ .proxy.url }}
+export HTTPS_PROXY=http://{{ .proxy.url }}
+export FTP_PROXY=http://{{ .proxy.url }}
+export ALL_PROXY=http://{{ .proxy.url }}
 
 {{ if (eq .chezmoi.os "linux") }}
 {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}

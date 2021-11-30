@@ -1,8 +1,24 @@
+{{- $name := "" -}}
+{{- if (hasKey . "name") -}}
+{{-   $name = .name -}}
+{{- else -}}
+{{-   $name = promptString "name" -}}
+{{- end -}}
+{{- $email := "" -}}
+{{- if (hasKey . "email") -}}
+{{-   $email = .email -}}
+{{- else -}}
+{{-   $email = promptString "email" -}}
+{{- end -}}
+{{- $setPoxy := promptBool "proxy" -}}
+
 format: yaml
 data:
-  name: "Michael Fornaro"
-  email: "20387402+xUnholy@users.noreply.github.com"
-  proxy: "localhost:3128"
+  name: {{ $name | quote }}
+  email: {{ $email | quote }}
+  proxy:
+    url: "localhost:3128"
+    set: {{ $setPoxy | quote }}
 
 encryption: "gpg"
 gpg:

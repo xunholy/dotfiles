@@ -24,10 +24,10 @@ export GPG_TTY=$(tty)
 # export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
 # Configure global proxy settings
-export http_proxy=http://{{ .proxy }}
-export https_proxy=http://{{ .proxy }}
-export ftp_proxy=http://{{ .proxy }}
-export HTTP_PROXY=http://{{ .proxy }}
-export HTTPS_PROXY=http://{{ .proxy }}
-export FTP_PROXY=http://{{ .proxy }}
-export ALL_PROXY=http://{{ .proxy }}
+export http_proxy=http://{{ .proxy.url }}
+export https_proxy=http://{{ .proxy.url }}
+export ftp_proxy=http://{{ .proxy.url }}
+export HTTP_PROXY=http://{{ .proxy.url }}
+export HTTPS_PROXY=http://{{ .proxy.url }}
+export FTP_PROXY=http://{{ .proxy.url }}
+export ALL_PROXY=http://{{ .proxy.url }}
