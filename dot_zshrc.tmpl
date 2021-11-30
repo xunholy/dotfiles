@@ -151,3 +151,16 @@ export HTTP_PROXY=http://{{ .proxy }}
 export HTTPS_PROXY=http://{{ .proxy }}
 export FTP_PROXY=http://{{ .proxy }}
 export ALL_PROXY=http://{{ .proxy }}
+
+{{ if (eq .chezmoi.os "linux") }}
+{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+# WSL2-specific code
+eval `keychain --quiet --eval --agents ssh id_ed25519`
+
+# Setup pbcopy & pbpaste equivalent
+LOCAL_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
+export DISPLAY=$LOCAL_IP:0
+alias pbcopy=clip.exe
+alias pbpaste="powershell.exe -Command get-clipboard"
+{{   end }}
+{{ end }}

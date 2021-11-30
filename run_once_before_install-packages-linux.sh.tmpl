@@ -1,0 +1,35 @@
+{{- if (eq .chezmoi.os "linux") -}}
+#!/bin/bash
+
+## Adding helm 
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+sudo apt-get install apt-transport-https --yes
+echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+
+## Adding ansible
+echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu all main" | sudo tee /etc/apt/sources.list.d/ansible-stable-debian.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+
+sudo apt-get update
+sudo apt-get install -y \
+    wget \
+    helm \
+    kubectx \
+    fzf \
+    ansible \
+    zsh \
+    xclip
+
+sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+
+## Adding Flux CLI
+curl -s https://raw.githubusercontent.com/fluxcd/flux2/main/install/flux.sh | sudo bash
+
+## Adding kustomize
+curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+
+## Adding kubeval
+wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+tar xf kubeval-linux-amd64.tar.gz
+sudo cp kubeval /usr/local/bin
+{{ end -}}
