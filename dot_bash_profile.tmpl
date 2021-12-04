@@ -8,8 +8,10 @@ fi
 # User specific environment and startup programs
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin
 
+{{- if (eq .chezmoi.os "darwin") -}}
 # Set homebrew in PATH
 export PATH=$PATH:/opt/homebrew/bin
+{{- end }}
 
 # SOPS will use VS Code
 export EDITOR='code --wait'
@@ -23,6 +25,7 @@ export GPG_TTY=$(tty)
 # Add Visual Studio Code (code)
 # export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
+{{ if (eq .proxy.set "true") }}
 # Configure global proxy settings
 export http_proxy=http://{{ .proxy.url }}
 export https_proxy=http://{{ .proxy.url }}
@@ -31,3 +34,12 @@ export HTTP_PROXY=http://{{ .proxy.url }}
 export HTTPS_PROXY=http://{{ .proxy.url }}
 export FTP_PROXY=http://{{ .proxy.url }}
 export ALL_PROXY=http://{{ .proxy.url }}
+{{ else }}
+unset http_proxy
+unset https_proxy
+unset ftp_proxy
+unset HTTP_PROXY
+unset HTTPS_PROXY
+unset FTP_PROXY
+unset ALL_PROXY
+{{- end }}
