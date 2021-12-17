@@ -1,7 +1,7 @@
 {{- if (eq .chezmoi.os "linux") -}}
 #!/bin/bash
 
-## Adding helm 
+## Adding helm
 curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
 sudo apt-get install apt-transport-https --yes
 echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
@@ -32,3 +32,12 @@ wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-lin
 tar xf kubeval-linux-amd64.tar.gz
 sudo cp kubeval /usr/local/bin
 {{ end -}}
+
+## Adding Yubikey support
+## https://support.yubico.com/hc/en-us/articles/360016649039-Enabling-the-Yubico-PPA-on-Ubuntu
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32CBA1A9
+sudo add-apt-repository -y ppa:yubico/stable
+sudo sudo apt-get update && sudo apt-get install -y \
+    yubikey-manager \
+    libpam-u2f \
+    libpam-yubico

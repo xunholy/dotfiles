@@ -11,7 +11,6 @@ Adding Oh-My-ZZH to Chezmoi requires some additional [configuration](https://www
 Steps:
 
 1. Install Chezmoi
-2. Install Homebrew
 3. Install GO
 4. Install Alpaca (Apple M1 must build from source)
 
