@@ -111,7 +111,9 @@ source $ZSH/oh-my-zsh.sh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Required to activate the syntax highlighting using zsh-syntax-highlighting
+{{- else if eq .chezmoi.os "darwin" }}
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+{{- end }}
 
 # Requred to activate fzf from Homebrew installation
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

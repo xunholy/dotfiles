@@ -1,3 +1,6 @@
+{{- $proxy := false -}}{{/* true if this machine requires a proxy */}}
+{{- $proxy = promptBool "proxy" -}}
+
 format: yaml
 data:
   name: "Michael Fornaro"
