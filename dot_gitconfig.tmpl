@@ -2,19 +2,21 @@
 	email = {{ .email }}
 	name = {{ .name }}
 	signingkey = 4D5665820FF1D266
+{{ if (eq .proxy.set "true") }}
 [http]
-	proxy = {{ .proxy }}
+	proxy = {{ .proxy.url }}
 [https]
-	proxy = {{ .proxy }}
+	proxy = {{ .proxy.url }}
+{{- end }}
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
 [commit]
 	gpgsign = true
 [gpg]
 {{- if eq .chezmoi.os "darwin" }}
-    program = /usr/local/bin/gpg
+	program = /usr/local/bin/gpg
 {{- else if eq .chezmoi.os "linux" }}
-    program = /usr/bin/gpg
+	program = /usr/bin/gpg
 {{- end }}
 [format]
 	signOff = true
@@ -26,4 +28,4 @@
 	process = git-lfs filter-process
 	required = true
 [init]
-    defaultBranch = main
+	defaultBranch = main

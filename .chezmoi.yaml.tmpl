@@ -3,9 +3,11 @@
 
 format: yaml
 data:
-  name: "Michael Fornaro"
-  email: "20387402+xUnholy@users.noreply.github.com"
-  proxy: "localhost:3128"
+  name: Michael Fornaro
+  email: 20387402+xUnholy@users.noreply.github.com
+  proxy:
+    url: "localhost:3128"
+    set: {{ $setPoxy | quote }}
 
 encryption: "gpg"
 gpg:

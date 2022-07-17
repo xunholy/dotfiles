@@ -9,7 +9,7 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/fornarom/.oh-my-zsh"
+export ZSH="{{ .chezmoi.homeDir }}/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -108,21 +108,22 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[[ ! -f {{ .chezmoi.homeDir }}/.p10k.zsh ]] || source {{ .chezmoi.homeDir }}/.p10k.zsh
 
-# Required to activate the syntax highlighting using zsh-syntax-highlighting
-{{- else if eq .chezmoi.os "darwin" }}
+{{- if eq .chezmoi.os "darwin" }}
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+{{- else if eq .chezmoi.os "linux" }}
+source {{ .chezmoi.homeDir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 {{- end }}
 
 # Requred to activate fzf from Homebrew installation
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/fornarom/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/fornarom/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/fornarom/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/fornarom/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc'; fi
 
 # Auto updates will cause the ~/.oh-my-zsh directory to drift out of sync with chezmoi’s source state.
 DISABLE_AUTO_UPDATE="true"
@@ -130,8 +131,10 @@ DISABLE_AUTO_UPDATE="true"
 # User specific environment and startup programs
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin
 
+{{- if (eq .chezmoi.os "darwin") -}}
 # Set homebrew in PATH
 export PATH=$PATH:/opt/homebrew/bin
+{{- end }}
 
 # SOPS will use VS Code
 export EDITOR='code --wait'
@@ -145,14 +148,24 @@ export GPG_TTY=$(tty)
 # Add Visual Studio Code (code)
 # export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
+{{ if (eq .proxy.set "true") }}
 # Configure global proxy settings
-export http_proxy=http://{{ .proxy }}
-export https_proxy=http://{{ .proxy }}
-export ftp_proxy=http://{{ .proxy }}
-export HTTP_PROXY=http://{{ .proxy }}
-export HTTPS_PROXY=http://{{ .proxy }}
-export FTP_PROXY=http://{{ .proxy }}
-export ALL_PROXY=http://{{ .proxy }}
+export http_proxy=http://{{ .proxy.url }}
+export https_proxy=http://{{ .proxy.url }}
+export ftp_proxy=http://{{ .proxy.url }}
+export HTTP_PROXY=http://{{ .proxy.url }}
+export HTTPS_PROXY=http://{{ .proxy.url }}
+export FTP_PROXY=http://{{ .proxy.url }}
+export ALL_PROXY=http://{{ .proxy.url }}
+{{ else }}
+unset http_proxy
+unset https_proxy
+unset ftp_proxy
+unset HTTP_PROXY
+unset HTTPS_PROXY
+unset FTP_PROXY
+unset ALL_PROXY
+{{- end }}
 
 {{ if (eq .chezmoi.os "linux") }}
 {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
