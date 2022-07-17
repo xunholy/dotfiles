@@ -36,11 +36,12 @@ tar xf kubeval-linux-amd64.tar.gz
 sudo cp kubeval /usr/local/bin
 {{ end -}}
 
+# TODO: Fix the yubikey in WSL2
 ## Adding Yubikey support
 ## https://support.yubico.com/hc/en-us/articles/360016649039-Enabling-the-Yubico-PPA-on-Ubuntu
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32CBA1A9
-sudo add-apt-repository -y ppa:yubico/stable
-sudo sudo apt-get update && sudo apt-get install -y \
-    yubikey-manager \
-    libpam-u2f \
-    libpam-yubico
+# sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 32CBA1A9
+# sudo add-apt-repository -y ppa:yubico/stable
+# sudo sudo apt-get update && sudo apt-get install -y \
+#     yubikey-manager \
+#     libpam-u2f \
+#     libpam-yubico
