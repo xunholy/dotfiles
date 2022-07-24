@@ -1,4 +1,6 @@
-{{- if (eq .chezmoi.os "linux") -}}
+{{- if eq .chezmoi.os "linux" -}}
+{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+
 #!/bin/bash
 
 ## Adding helm
@@ -34,7 +36,6 @@ curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack
 wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
 tar xf kubeval-linux-amd64.tar.gz
 sudo cp kubeval /usr/local/bin
-{{ end -}}
 
 # TODO: Fix the yubikey in WSL2
 ## Adding Yubikey support
@@ -45,3 +46,6 @@ sudo cp kubeval /usr/local/bin
 #     yubikey-manager \
 #     libpam-u2f \
 #     libpam-yubico
+
+{{   end }}
+{{ end }}

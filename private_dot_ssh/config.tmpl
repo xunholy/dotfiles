@@ -1,7 +1,7 @@
 Host *
   AddKeysToAgent yes
 {{- if (eq .chezmoi.os "darwin") }}
-  IgnoreUnkown UseKeychain
+  IgnoreUnknown UseKeychain
   UseKeychain yes
 {{- end }}
   IdentityFile ~/.ssh/id_ed25519
@@ -13,6 +13,6 @@ Host 192.168.*
 Host github.com
   Hostname ssh.github.com
   Port 443
-{{ if (eq .proxy.set "true") }}
+{{- if (eq .proxy.set "true") }}
   ProxyCommand nc -X connect -x {{ .proxy.url }} %h %p
 {{- end }}
