@@ -1,7 +1,7 @@
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
-	signingkey = 4D5665820FF1D266
+	signingkey = /home/fornarom/.ssh/id_ed25519.pub
 {{ if (eq .proxy.set "true") }}
 [http]
 	proxy = {{ .proxy.url }}
@@ -17,6 +17,7 @@
 	program = /usr/local/bin/gpg
 {{- else if eq .chezmoi.os "linux" }}
 	program = /usr/bin/gpg
+	format = ssh
 {{- end }}
 [format]
 	signOff = true
