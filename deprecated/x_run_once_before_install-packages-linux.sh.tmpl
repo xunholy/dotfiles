@@ -1,5 +1,6 @@
-{{- if eq .chezmoi.os "linux" -}}
+{{ if eq .chezmoi.os "linux" }}
 {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+# WSL-specific code
 
 #!/bin/bash
 
@@ -11,9 +12,6 @@ echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt
 ## Adding ansible
 echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu all main" | sudo tee /etc/apt/sources.list.d/ansible-stable-debian.list
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
-
-## Adding kubectl
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 
 sudo apt-get update
 sudo apt-get install -y \

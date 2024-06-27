@@ -6,4 +6,7 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 {{ else if eq .chezmoi.os "linux" -}}
 # Linux .bashrc contents
+. "$HOME/.cargo/env"
+
+complete -C /usr/bin/terraform terraform
 {{ end -}}
