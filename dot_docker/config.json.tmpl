@@ -1,7 +1,21 @@
 {
   "auths": {
     "ghcr.io": {},
-    "https://index.docker.io/v1/": {}
+    "https://index.docker.io/v1/": {},
+    "australia-southeast1-docker.pkg.dev": {}
   },
+  {{ if eq .chezmoi.os "linux" }}
+  {{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
   "credsStore": "desktop.exe"
+  {{   end }}
+  {{ end }}
+  {{- if eq .chezmoi.os "darwin" -}}
+  "credsStore": "desktop",
+	"proxies": {
+		"default": {
+			"httpProxy": "http://docker.for.mac.localhost:3128",
+			"httpsProxy": "http://docker.for.mac.localhost:3128"
+		}
+	}
+  {{ end -}}
 }
