@@ -8,5 +8,7 @@
 # Linux .bashrc contents
 . "$HOME/.cargo/env"
 
+# WSL2 Brew installation path
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 complete -C /usr/bin/terraform terraform
 {{ end -}}

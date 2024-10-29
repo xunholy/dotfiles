@@ -2,7 +2,6 @@ packages:
   darwin:
     brews:
     - 'ansible'
-    - 'bash-completion'
     - 'chezmoi'
     - 'cloudflared'
     - 'cosign'
@@ -13,6 +12,7 @@ packages:
     - 'docker-compose'
     - 'fluxcd/tap/flux'
     - 'fzf'
+    - 'gcc'
     - 'geoip'
     - 'gh'
     - 'git'
@@ -44,4 +44,5 @@ packages:
     - 'fluxcd/tap'
     - 'go-task/tap'
     - 'hashicorp/tap'
+    - 'siderolabs/tap/talosctl'
     casks:
