@@ -21,6 +21,7 @@ packages:
     - 'helm'
     - 'jq'
     - 'ko'
+    - 'kubecolor'
     - 'kubectx'
     - 'kubernetes-cli'
     - 'kubeseal'
