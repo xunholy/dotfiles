@@ -4,7 +4,7 @@ Host *
   IgnoreUnknown UseKeychain
   UseKeychain yes
 {{- end }}
-  IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ~/.ssh/github_ed25519.pub
 
 Host 192.168.*
   UserKnownHostsFile=/dev/null
@@ -13,7 +13,7 @@ Host 192.168.*
 Host github.com
   Hostname ssh.github.com
   Port 443
-  IdentityFile ~/.ssh/id_ed25519
+  IdentityFile ~/.ssh/github_ed25519.pub
 {{- if (eq .proxy.set "true") }}
   ProxyCommand nc -X connect -x {{ .proxy.url }} %h %p
 {{- end }}
