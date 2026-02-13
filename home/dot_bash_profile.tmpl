@@ -8,7 +8,7 @@ fi
 # User specific environment and startup programs
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin
 
-{{- if (eq .chezmoi.os "darwin") -}}
+{{- if eq .chezmoi.os "darwin" }}
 # Set homebrew in PATH
 export PATH=$PATH:/opt/homebrew/bin
 {{- end }}
@@ -19,13 +19,7 @@ export EDITOR='code --wait'
 # Setting GPG TTY - Git Signing
 export GPG_TTY=$(tty)
 
-# Set PATH to GOPATH/bin
-# export PATH=$PATH:$(go env GOPATH)/bin
-
-# Add Visual Studio Code (code)
-# export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-
-{{ if (eq .proxy.set "true") }}
+{{ if eq .proxy.set "true" }}
 # Configure global proxy settings
 export http_proxy=http://{{ .proxy.url }}
 export https_proxy=http://{{ .proxy.url }}
@@ -44,4 +38,22 @@ unset FTP_PROXY
 unset ALL_PROXY
 {{- end }}
 
-. "$HOME/.cargo/env"
+# Cargo/Rust
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+{{ if eq .chezmoi.os "linux" }}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+# Flutter/Android (WSL2)
+export CHROME_EXECUTABLE=/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib/x86_64-linux-gnu/pkgconfig
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/share/pkgconfig
+
+export ANDROID_HOME=$HOME/Android
+export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+
+# Configure Android ADB
+# https://stackoverflow.com/questions/62145379/how-to-connect-android-studio-running-inside-wsl2-with-connected-devices-or-andr
+export WSL_HOST_IP="$(tail -1 /etc/resolv.conf | cut -d' ' -f2)"
+export ADB_SERVER_SOCKET=tcp:$WSL_HOST_IP:5037
+{{-   end }}
+{{- end }}

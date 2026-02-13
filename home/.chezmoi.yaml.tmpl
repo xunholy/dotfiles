@@ -8,6 +8,13 @@ data:
   proxy:
     url: "localhost:3128"
     set: {{ $proxy | quote }}
+  zshPlugins:
+    - git
+    - dotenv
+    - docker
+    - kubectl
+    - zsh-autosuggestions
+    - fzf
 
 encryption: "gpg"
 gpg:

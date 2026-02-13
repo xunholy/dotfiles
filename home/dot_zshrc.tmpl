@@ -5,90 +5,26 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
 # Path to your oh-my-zsh installation.
 export ZSH="{{ .chezmoi.homeDir }}/.oh-my-zsh"
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+# Set name of the theme to load
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
+# Disable auto updates - chezmoi manages oh-my-zsh via .chezmoiexternal.toml
+DISABLE_AUTO_UPDATE="true"
 
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(
+  git
+  dotenv
+  docker
   zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
-
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 if [[ -n $SSH_CONNECTION ]]; then
@@ -96,18 +32,6 @@ if [[ -n $SSH_CONNECTION ]]; then
 else
   export EDITOR='code --wait'
 fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f {{ .chezmoi.homeDir }}/.p10k.zsh ]] || source {{ .chezmoi.homeDir }}/.p10k.zsh
@@ -118,10 +42,11 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source {{ .chezmoi.homeDir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 {{- end }}
 
-# Required to activate fzf from Homebrew installation
+# Activate fzf keybindings
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 source <(fzf --zsh)
 
+# Kubectl completion (loaded directly instead of via oh-my-zsh plugin for speed)
 source <(kubectl completion zsh)
 
 # The next line updates PATH for the Google Cloud SDK.
@@ -130,22 +55,18 @@ if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc' ]; then . '{{ .ch
 # The next line enables shell command completion for gcloud.
 if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc'; fi
 
-# Auto updates will cause the ~/.oh-my-zsh directory to drift out of sync with chezmoi’s source state.
-DISABLE_AUTO_UPDATE="true"
-
 # User specific environment and startup programs
-export PATH="$HOME/.local/bin:$HOME/bin:/opt/homebrew/bin:$PATH"
+export PATH=$PATH:$HOME/.local/bin:$HOME/bin
+
+{{- if eq .chezmoi.os "darwin" }}
+# Set homebrew in PATH
+export PATH=$PATH:/opt/homebrew/bin
+{{- end }}
 
 # Setting GPG TTY - Git Signing
 export GPG_TTY=$(tty)
 
-# Set PATH to GOPATH/bin
-# export PATH=$PATH:$(go env GOPATH)/bin
-
-# Add Visual Studio Code (code)
-# export PATH="\$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
-
-{{ if (eq .proxy.set "true") }}
+{{ if eq .proxy.set "true" }}
 # Configure global proxy settings
 export http_proxy=http://{{ .proxy.url }}
 export https_proxy=http://{{ .proxy.url }}
@@ -164,8 +85,8 @@ unset FTP_PROXY
 unset ALL_PROXY
 {{- end }}
 
-{{ if (eq .chezmoi.os "linux") }}
-{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+{{ if eq .chezmoi.os "linux" }}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 # WSL2-specific code
 eval `keychain --quiet --eval --agents ssh id_ed25519`
 
@@ -174,12 +95,65 @@ LOCAL_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
 export DISPLAY=$LOCAL_IP:0
 alias pbcopy=clip.exe
 alias pbpaste="powershell.exe -Command get-clipboard"
-{{   end }}
-{{ end }}
+{{-   end }}
+{{- end }}
 
-export NVM_DIR="{{ .chezmoi.homeDir }}/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Setup Homebrew
+{{- if eq .chezmoi.os "darwin" }}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else if eq .chezmoi.os "linux" }}
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
+
+# Go Installation
+# https://go.dev/doc/install#install
+export PATH=$PATH:/usr/local/go/bin
+
+{{ if eq .chezmoi.os "linux" }}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+# Flutter/Android (WSL2)
+# export CHROME_EXECUTABLE=/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib/x86_64-linux-gnu/pkgconfig
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/share/pkgconfig
+
+export ANDROID_HOME=$HOME/Android
+export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH
+
+# Kubebuilder installation
+export PATH=$PATH:/usr/local/kubebuilder/bin
+{{-   end }}
+{{- end }}
+
+# Lazy-load NVM - only initializes when nvm/node/npm/npx is first called
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  nvm() {
+    unset -f nvm node npm npx
+    \. "$NVM_DIR/nvm.sh"
+    nvm "$@"
+  }
+  node() {
+    unset -f nvm node npm npx
+    \. "$NVM_DIR/nvm.sh"
+    node "$@"
+  }
+  npm() {
+    unset -f nvm node npm npx
+    \. "$NVM_DIR/nvm.sh"
+    npm "$@"
+  }
+  npx() {
+    unset -f nvm node npm npx
+    \. "$NVM_DIR/nvm.sh"
+    npx "$@"
+  }
+fi
+
+# Solana
+export PATH="{{ .chezmoi.homeDir }}/.local/share/solana/install/active_release/bin:$PATH"
 
 # Specific to Kick
-source $HOME/.kickrc
+[ -f "$HOME/.kickrc" ] && source "$HOME/.kickrc"

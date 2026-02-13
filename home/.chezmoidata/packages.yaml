@@ -31,6 +31,7 @@ packages:
     - 'pre-commit'
     - 'rust'
     - 'siege'
+    - 'siderolabs/tap/talosctl'
     - 'sops'
     - 'stern'
     - 'syft'
