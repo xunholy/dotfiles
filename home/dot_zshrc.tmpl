@@ -39,15 +39,23 @@ fi
 {{- if eq .chezmoi.os "darwin" }}
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 {{- else if eq .chezmoi.os "linux" }}
-source {{ .chezmoi.homeDir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ -f {{ .chezmoi.homeDir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && \
+  source {{ .chezmoi.homeDir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 {{- end }}
 
-# Activate fzf keybindings
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source <(fzf --zsh)
+# Activate fzf keybindings (use built-in integration if available, fallback to ~/.fzf.zsh)
+if (( $+commands[fzf] )); then
+  source <(fzf --zsh 2>/dev/null) || [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+fi
 
-# Kubectl completion (loaded directly instead of via oh-my-zsh plugin for speed)
-source <(kubectl completion zsh)
+# Lazy-load kubectl completion — only initializes when kubectl is first used
+if (( $+commands[kubectl] )); then
+  kubectl() {
+    unset -f kubectl
+    source <(command kubectl completion zsh)
+    kubectl "$@"
+  }
+fi
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc' ]; then . '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc'; fi
@@ -88,11 +96,11 @@ unset ALL_PROXY
 {{ if eq .chezmoi.os "linux" }}
 {{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 # WSL2-specific code
-eval `keychain --quiet --eval --agents ssh id_ed25519`
+if (( $+commands[keychain] )) && [[ -f ~/.ssh/id_ed25519 ]]; then
+  eval "$(keychain --quiet --eval --agents ssh id_ed25519)"
+fi
 
 # Setup pbcopy & pbpaste equivalent
-LOCAL_IP=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}')
-export DISPLAY=$LOCAL_IP:0
 alias pbcopy=clip.exe
 alias pbpaste="powershell.exe -Command get-clipboard"
 {{-   end }}
@@ -112,7 +120,6 @@ export PATH=$PATH:/usr/local/go/bin
 {{ if eq .chezmoi.os "linux" }}
 {{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 # Flutter/Android (WSL2)
-# export CHROME_EXECUTABLE=/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib/x86_64-linux-gnu/pkgconfig
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/share/pkgconfig
 

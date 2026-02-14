@@ -48,3 +48,15 @@ packages:
     - 'go-task/tap'
     - 'hashicorp/tap'
     casks:
+  linux:
+    brews:
+    - 'chezmoi'
+    - 'curl'
+    - 'fzf'
+    - 'gh'
+    - 'git'
+    - 'jq'
+    - 'kubernetes-cli'
+    - 'wget'
+    - 'yq'
+    taps:
