@@ -100,6 +100,13 @@ if (( $+commands[keychain] )) && [[ -f ~/.ssh/id_ed25519 ]]; then
   eval "$(keychain --quiet --eval --agents ssh id_ed25519)"
 fi
 
+# WSLg / X11 display configuration
+# WSLg (Windows 11) sets DISPLAY=:0 and WAYLAND_DISPLAY automatically.
+# Fallback to legacy X11 forwarding if WSLg is not available.
+if [[ -z "$DISPLAY" ]]; then
+  export DISPLAY="$(awk '/nameserver/ {print $2; exit}' /etc/resolv.conf):0"
+fi
+
 # Setup pbcopy & pbpaste equivalent
 alias pbcopy=clip.exe
 alias pbpaste="powershell.exe -Command get-clipboard"
