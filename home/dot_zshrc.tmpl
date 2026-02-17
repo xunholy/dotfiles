@@ -1,107 +1,129 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Setup Homebrew early so oh-my-zsh and plugins can find brew-installed tools
+# Homebrew (inlined — avoids subprocess on every shell)
 {{- if eq .chezmoi.os "darwin" }}
-eval "$(/opt/homebrew/bin/brew shellenv)"
+export HOMEBREW_PREFIX="/opt/homebrew"
+export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+export HOMEBREW_REPOSITORY="/opt/homebrew"
+fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
+path=("$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/sbin" $path)
+[ -z "${MANPATH-}" ] || export MANPATH=":${MANPATH#:}"
+export INFOPATH="$HOMEBREW_PREFIX/share/info:${INFOPATH:-}"
 {{- else if eq .chezmoi.os "linux" }}
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+export HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
+export HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX/Homebrew"
+fpath=("$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath)
+path=("$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/sbin" $path)
+[ -z "${MANPATH-}" ] || export MANPATH="$HOMEBREW_PREFIX/share/man:${MANPATH#:}"
+export INFOPATH="$HOMEBREW_PREFIX/share/info:${INFOPATH:-}"
 {{- end }}
 
-# Path to your oh-my-zsh installation.
-export ZSH="{{ .chezmoi.homeDir }}/.oh-my-zsh"
+# ── Theme ───────────────────────────────────────────────────────────
+source {{ .chezmoi.homeDir }}/.zsh/themes/powerlevel10k/powerlevel10k.zsh-theme
 
-# Set name of the theme to load
-ZSH_THEME="powerlevel10k/powerlevel10k"
+# ── History ─────────────────────────────────────────────────────────
+HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
+HISTSIZE=50000
+SAVEHIST=10000
+setopt extended_history        # record timestamp
+setopt hist_expire_dups_first  # trim duplicates first
+setopt hist_ignore_dups        # skip consecutive duplicates
+setopt hist_ignore_space       # ignore commands starting with space
+setopt hist_verify             # confirm before running history expansion
+setopt share_history           # share across sessions
 
-# Disable auto updates - chezmoi manages oh-my-zsh via .chezmoiexternal.toml
-DISABLE_AUTO_UPDATE="true"
+# ── Directory navigation ────────────────────────────────────────────
+setopt auto_cd
+setopt auto_pushd
+setopt pushd_ignore_dups
 
-# Which plugins would you like to load?
-plugins=(
-{{- range .zshPlugins }}
-  {{ . }}
-{{- end }}
-)
-
-# Skip compinit rebuild if dump is less than 24h old
+# ── Completion ──────────────────────────────────────────────────────
 autoload -Uz compinit
-{{- if eq .chezmoi.os "darwin" }}
-if [[ -f ~/.zcompdump && $(date +'%j') == $(date -r ~/.zcompdump +'%j' 2>/dev/null) ]]; then
-{{- else }}
-if [[ -f ~/.zcompdump && $(date +'%j') == $(date -d @$(stat -c '%Y' ~/.zcompdump 2>/dev/null) +'%j' 2>/dev/null) ]]; then
-{{- end }}
-  compinit -C
+if [[ -n ~/.zcompdump(#qN.mh-24) ]]; then
+  compinit -C   # recent dump — use cached
 else
-  compinit
+  compinit      # old or missing — full rebuild
 fi
 
-source $ZSH/oh-my-zsh.sh
+# ── Key bindings (emacs mode) ──────────────────────────────────────
+bindkey -e
+bindkey '^[[H'    beginning-of-line    # Home
+bindkey '^[[F'    end-of-line          # End
+bindkey '^[[3~'   delete-char          # Delete
+bindkey '^[[1;5C' forward-word         # Ctrl+Right
+bindkey '^[[1;5D' backward-word        # Ctrl+Left
 
-# Preferred editor for local and remote sessions
+# ── Editor ──────────────────────────────────────────────────────────
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
   export EDITOR='code --wait'
 fi
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f {{ .chezmoi.homeDir }}/.p10k.zsh ]] || source {{ .chezmoi.homeDir }}/.p10k.zsh
+# ── Plugins (sourced directly — no framework overhead) ──────────────
+source {{ .chezmoi.homeDir }}/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source {{ .chezmoi.homeDir }}/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-{{- if eq .chezmoi.os "darwin" }}
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-{{- else if eq .chezmoi.os "linux" }}
-[[ -f {{ .chezmoi.homeDir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && \
-  source {{ .chezmoi.homeDir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-{{- end }}
-
-# Activate fzf keybindings (use built-in integration if available, fallback to ~/.fzf.zsh)
+# fzf keybindings
 if (( $+commands[fzf] )); then
-  source <(fzf --zsh 2>/dev/null) || [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+  if ! source <(fzf --zsh 2>/dev/null); then
+    [[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+  fi
 fi
 
-# Lazy-load kubectl completion — only initializes when kubectl is first used
+# kubectl — lazy-load with disk cache
 if (( $+commands[kubectl] )); then
   kubectl() {
     unset -f kubectl
-    source <(command kubectl completion zsh)
+    local cache="${XDG_CACHE_HOME:-$HOME/.cache}/kubectl-completion-zsh"
+    if [[ ! -f "$cache" || "$cache" -ot "$(command -v kubectl)" ]]; then
+      command kubectl completion zsh > "$cache"
+    fi
+    source "$cache"
     kubectl "$@"
   }
 fi
 
-# User specific environment and startup programs
+# ── p10k config ─────────────────────────────────────────────────────
+[[ ! -f {{ .chezmoi.homeDir }}/.p10k.zsh ]] || source {{ .chezmoi.homeDir }}/.p10k.zsh
+
+# ── Environment ─────────────────────────────────────────────────────
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin
-
-# Setting GPG TTY - Git Signing
 export GPG_TTY=$(tty)
-
-{{ if eq .chezmoi.os "linux" }}
-{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
-# WSL2-specific code
-if (( $+commands[keychain] )) && [[ -f ~/.ssh/{{ .sshKeyName }} ]]; then
-  eval "$(keychain --quiet --eval --agents ssh {{ .sshKeyName }})"
-fi
-
-# WSLg / X11 display configuration
-if [[ -z "$DISPLAY" ]]; then
-  export DISPLAY="$(awk '/nameserver/ {print $2; exit}' /etc/resolv.conf):0"
-fi
-
-# Setup pbcopy & pbpaste equivalent
-alias pbcopy=clip.exe
-alias pbpaste="powershell.exe -Command get-clipboard"
-{{-   end }}
-{{- end }}
 
 # Go
 export PATH=$PATH:/usr/local/go/bin
 
-{{- if eq .chezmoi.os "darwin" }}
+{{ if eq .chezmoi.os "linux" }}
+{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+# ── WSL2 ────────────────────────────────────────────────────────────
+if (( $+commands[keychain] )) && [[ -f ~/.ssh/{{ .sshKeyName }} ]]; then
+  eval "$(keychain --quiet --eval --agents ssh {{ .sshKeyName }})"
+fi
 
+if [[ -z "$DISPLAY" ]]; then
+  export DISPLAY="$(awk '/nameserver/ {print $2; exit}' /etc/resolv.conf):0"
+fi
+
+alias pbcopy=clip.exe
+alias pbpaste="powershell.exe -Command get-clipboard"
+
+# Flutter/Android (WSL2)
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib/x86_64-linux-gnu/pkgconfig
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/share/pkgconfig
+export ANDROID_HOME=$HOME/Android
+export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH
+export PATH=$PATH:/usr/local/kubebuilder/bin
+{{-   end }}
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
 # Android Studio bundled JDK (macOS)
 if [[ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]]; then
   export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
@@ -109,61 +131,29 @@ if [[ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]]; then
 fi
 {{- end }}
 
-{{ if eq .chezmoi.os "linux" }}
-{{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
-# Flutter/Android (WSL2)
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib/x86_64-linux-gnu/pkgconfig
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/share/pkgconfig
-
-export ANDROID_HOME=$HOME/Android
-export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
-
-export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-export PATH=$JAVA_HOME/bin:$PATH
-
-# Kubebuilder
-export PATH=$PATH:/usr/local/kubebuilder/bin
-{{-   end }}
-{{- end }}
-
-# Lazy-load NVM - only initializes when nvm/node/npm/npx is first called
+# ── NVM (lazy-loaded) ──────────────────────────────────────────────
 export NVM_DIR="$HOME/.nvm"
-if [ -s "$NVM_DIR/nvm.sh" ]; then
-  nvm() {
-    unset -f nvm node npm npx
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  __load_nvm() {
+    unset -f nvm node npm npx __load_nvm
     \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    nvm "$@"
+    [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion"
   }
-  node() {
-    unset -f nvm node npm npx
-    \. "$NVM_DIR/nvm.sh"
-    node "$@"
-  }
-  npm() {
-    unset -f nvm node npm npx
-    \. "$NVM_DIR/nvm.sh"
-    npm "$@"
-  }
-  npx() {
-    unset -f nvm node npm npx
-    \. "$NVM_DIR/nvm.sh"
-    npx "$@"
-  }
+  nvm()  { __load_nvm; nvm  "$@" }
+  node() { __load_nvm; node "$@" }
+  npm()  { __load_nvm; npm  "$@" }
+  npx()  { __load_nvm; npx  "$@" }
 fi
 
 # Google Cloud SDK
-if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc' ]; then
-  . '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc'
-fi
-if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc' ]; then
-  . '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc'
-fi
+[[ -f {{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc ]] && \
+  . {{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc
+[[ -f {{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc ]] && \
+  . {{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc
 
 # Flutter
-if [[ -d "{{ .chezmoi.homeDir }}/develop/flutter/bin" ]]; then
+[[ -d {{ .chezmoi.homeDir }}/develop/flutter/bin ]] && \
   export PATH="{{ .chezmoi.homeDir }}/develop/flutter/bin:$PATH"
-fi
 
-# Source machine-specific config if present
+# Machine-specific config
 [[ -f "$HOME/.kickrc" ]] && source "$HOME/.kickrc"

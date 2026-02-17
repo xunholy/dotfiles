@@ -1,0 +1,3 @@
+# Granted - AWS credential management
+export GRANTED_ALIAS_CONFIGURED="true"
+alias assume="source assume"
