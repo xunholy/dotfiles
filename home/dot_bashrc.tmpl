@@ -1,19 +1,7 @@
-# xUnholy Bash Config
-# .bashrc
-
-{{ if eq .chezmoi.os "darwin" -}}
-# macOS .bashrc contents
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-{{ else if eq .chezmoi.os "linux" -}}
-# Linux .bashrc contents
+# .bashrc - minimal, primary shell is zsh
+{{- if eq .chezmoi.os "darwin" }}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else if eq .chezmoi.os "linux" }}
+[ -x /home/linuxbrew/.linuxbrew/bin/brew ] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
-
-# WSL2 Brew installation path
-if type brew &>/dev/null; then
-  eval "$(brew shellenv)"
-elif [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-fi
-
-type terraform &>/dev/null && complete -C "$(command -v terraform)" terraform
-{{ end -}}

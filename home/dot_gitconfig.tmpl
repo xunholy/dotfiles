@@ -2,12 +2,6 @@
 	email = {{ .email }}
 	name = {{ .name }}
 	signingkey = {{ .chezmoi.homeDir }}/.ssh/{{ .sshKeyName }}.pub
-{{ if (eq .proxy.set "true") }}
-[http]
-	proxy = {{ .proxy.url }}
-[https]
-	proxy = {{ .proxy.url }}
-{{- end }}
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
 [url "git@github.com:"]
@@ -15,12 +9,11 @@
 [commit]
 	gpgsign = true
 [gpg]
+	format = ssh
 {{- if eq .chezmoi.os "darwin" }}
 	program = /opt/homebrew/bin/gpg
-	format = ssh
 {{- else if eq .chezmoi.os "linux" }}
 	program = /usr/bin/gpg
-	format = ssh
 {{- end }}
 [format]
 	signOff = true

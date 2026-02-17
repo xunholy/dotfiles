@@ -14,6 +14,3 @@ Host github.com
   Hostname ssh.github.com
   Port 443
   IdentityFile ~/.ssh/{{ .sshKeyName }}
-{{- if (eq .proxy.set "true") }}
-  ProxyCommand nc -X connect -x {{ .proxy.url }} %h %p
-{{- end }}

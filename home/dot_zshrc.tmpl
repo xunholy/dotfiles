@@ -22,8 +22,6 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 DISABLE_AUTO_UPDATE="true"
 
 # Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
 plugins=(
 {{- range .zshPlugins }}
   {{ . }}
@@ -81,25 +79,6 @@ export PATH=$PATH:$HOME/.local/bin:$HOME/bin
 # Setting GPG TTY - Git Signing
 export GPG_TTY=$(tty)
 
-{{ if eq .proxy.set "true" }}
-# Configure global proxy settings
-export http_proxy=http://{{ .proxy.url }}
-export https_proxy=http://{{ .proxy.url }}
-export ftp_proxy=http://{{ .proxy.url }}
-export HTTP_PROXY=http://{{ .proxy.url }}
-export HTTPS_PROXY=http://{{ .proxy.url }}
-export FTP_PROXY=http://{{ .proxy.url }}
-export ALL_PROXY=http://{{ .proxy.url }}
-{{ else }}
-unset http_proxy
-unset https_proxy
-unset ftp_proxy
-unset HTTP_PROXY
-unset HTTPS_PROXY
-unset FTP_PROXY
-unset ALL_PROXY
-{{- end }}
-
 {{ if eq .chezmoi.os "linux" }}
 {{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 # WSL2-specific code
@@ -108,8 +87,6 @@ if (( $+commands[keychain] )) && [[ -f ~/.ssh/{{ .sshKeyName }} ]]; then
 fi
 
 # WSLg / X11 display configuration
-# WSLg (Windows 11) sets DISPLAY=:0 and WAYLAND_DISPLAY automatically.
-# Fallback to legacy X11 forwarding if WSLg is not available.
 if [[ -z "$DISPLAY" ]]; then
   export DISPLAY="$(awk '/nameserver/ {print $2; exit}' /etc/resolv.conf):0"
 fi
@@ -120,8 +97,7 @@ alias pbpaste="powershell.exe -Command get-clipboard"
 {{-   end }}
 {{- end }}
 
-# Go Installation
-# https://go.dev/doc/install#install
+# Go
 export PATH=$PATH:/usr/local/go/bin
 
 {{- if eq .chezmoi.os "darwin" }}
@@ -145,7 +121,7 @@ export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 export PATH=$JAVA_HOME/bin:$PATH
 
-# Kubebuilder installation
+# Kubebuilder
 export PATH=$PATH:/usr/local/kubebuilder/bin
 {{-   end }}
 {{- end }}
@@ -188,9 +164,6 @@ fi
 if [[ -d "{{ .chezmoi.homeDir }}/develop/flutter/bin" ]]; then
   export PATH="{{ .chezmoi.homeDir }}/develop/flutter/bin:$PATH"
 fi
-
-# Solana
-export PATH="{{ .chezmoi.homeDir }}/.local/share/solana/install/active_release/bin:$PATH"
 
 # Source machine-specific config if present
 [[ -f "$HOME/.kickrc" ]] && source "$HOME/.kickrc"
