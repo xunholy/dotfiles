@@ -8,10 +8,10 @@ fi
 # User specific environment and startup programs
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin
 
-{{- if eq .chezmoi.os "darwin" }}
+{{ if eq .chezmoi.os "darwin" -}}
 # Set homebrew in PATH
 export PATH=$PATH:/opt/homebrew/bin
-{{- end }}
+{{ end -}}
 
 # SOPS will use VS Code
 export EDITOR='code --wait'

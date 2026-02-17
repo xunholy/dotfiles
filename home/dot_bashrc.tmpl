@@ -6,9 +6,14 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 {{ else if eq .chezmoi.os "linux" -}}
 # Linux .bashrc contents
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 # WSL2 Brew installation path
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-complete -C /usr/bin/terraform terraform
+if type brew &>/dev/null; then
+  eval "$(brew shellenv)"
+elif [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
+type terraform &>/dev/null && complete -C "$(command -v terraform)" terraform
 {{ end -}}

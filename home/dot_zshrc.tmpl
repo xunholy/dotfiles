@@ -25,13 +25,18 @@ DISABLE_AUTO_UPDATE="true"
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 plugins=(
-  git
-  zsh-autosuggestions
+{{- range .zshPlugins }}
+  {{ . }}
+{{- end }}
 )
 
 # Skip compinit rebuild if dump is less than 24h old
 autoload -Uz compinit
+{{- if eq .chezmoi.os "darwin" }}
 if [[ -f ~/.zcompdump && $(date +'%j') == $(date -r ~/.zcompdump +'%j' 2>/dev/null) ]]; then
+{{- else }}
+if [[ -f ~/.zcompdump && $(date +'%j') == $(date -d @$(stat -c '%Y' ~/.zcompdump 2>/dev/null) +'%j' 2>/dev/null) ]]; then
+{{- end }}
   compinit -C
 else
   compinit
@@ -98,8 +103,8 @@ unset ALL_PROXY
 {{ if eq .chezmoi.os "linux" }}
 {{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
 # WSL2-specific code
-if (( $+commands[keychain] )) && [[ -f ~/.ssh/id_ed25519 ]]; then
-  eval "$(keychain --quiet --eval --agents ssh id_ed25519)"
+if (( $+commands[keychain] )) && [[ -f ~/.ssh/{{ .sshKeyName }} ]]; then
+  eval "$(keychain --quiet --eval --agents ssh {{ .sshKeyName }})"
 fi
 
 # WSLg / X11 display configuration
@@ -118,6 +123,15 @@ alias pbpaste="powershell.exe -Command get-clipboard"
 # Go Installation
 # https://go.dev/doc/install#install
 export PATH=$PATH:/usr/local/go/bin
+
+{{- if eq .chezmoi.os "darwin" }}
+
+# Android Studio bundled JDK (macOS)
+if [[ -d "/Applications/Android Studio.app/Contents/jbr/Contents/Home" ]]; then
+  export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+  export PATH="$JAVA_HOME/bin:$PATH"
+fi
+{{- end }}
 
 {{ if eq .chezmoi.os "linux" }}
 {{-   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
@@ -142,6 +156,7 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
   nvm() {
     unset -f nvm node npm npx
     \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
     nvm "$@"
   }
   node() {
@@ -161,5 +176,21 @@ if [ -s "$NVM_DIR/nvm.sh" ]; then
   }
 fi
 
+# Google Cloud SDK
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc' ]; then
+  . '{{ .chezmoi.homeDir }}/google-cloud-sdk/path.zsh.inc'
+fi
+if [ -f '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc' ]; then
+  . '{{ .chezmoi.homeDir }}/google-cloud-sdk/completion.zsh.inc'
+fi
+
+# Flutter
+if [[ -d "{{ .chezmoi.homeDir }}/develop/flutter/bin" ]]; then
+  export PATH="{{ .chezmoi.homeDir }}/develop/flutter/bin:$PATH"
+fi
+
 # Solana
 export PATH="{{ .chezmoi.homeDir }}/.local/share/solana/install/active_release/bin:$PATH"
+
+# Source machine-specific config if present
+[[ -f "$HOME/.kickrc" ]] && source "$HOME/.kickrc"

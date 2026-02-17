@@ -1,7 +1,7 @@
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
-	signingkey = {{ .chezmoi.homeDir }}/.ssh/id_ed25519.pub
+	signingkey = {{ .chezmoi.homeDir }}/.ssh/{{ .sshKeyName }}.pub
 {{ if (eq .proxy.set "true") }}
 [http]
 	proxy = {{ .proxy.url }}
@@ -9,6 +9,8 @@
 	proxy = {{ .proxy.url }}
 {{- end }}
 [url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[url "git@github.com:"]
 	insteadOf = https://github.com/
 [commit]
 	gpgsign = true

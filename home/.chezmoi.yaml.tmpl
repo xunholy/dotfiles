@@ -1,13 +1,23 @@
-{{- $proxy := false -}}{{/* true if this machine requires a proxy */}}
-{{- $proxy = promptBool "proxy" -}}
+{{- /* Auto-detect machine type: darwin = work macbook, linux+WSL2 = personal windows */ -}}
+{{- $isWork := eq .chezmoi.os "darwin" -}}
+{{- $proxy := false -}}
+{{- if $isWork -}}
+{{-   $proxy = promptBool "proxy (work network)" -}}
+{{- end -}}
+{{- $sshKeyName := "id_ed25519" -}}
+{{- if $isWork -}}
+{{-   $sshKeyName = "github_ed25519" -}}
+{{- end -}}
 
 format: yaml
 data:
   name: Michael Fornaro
   email: 20387402+xUnholy@users.noreply.github.com
+  isWork: {{ $isWork }}
   proxy:
     url: "localhost:3128"
     set: {{ $proxy | quote }}
+  sshKeyName: {{ $sshKeyName | quote }}
   zshPlugins:
     - git
     - fzf
