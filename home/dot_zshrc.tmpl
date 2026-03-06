@@ -57,6 +57,15 @@ bindkey '^[[3~'   delete-char          # Delete
 bindkey '^[[1;5C' forward-word         # Ctrl+Right
 bindkey '^[[1;5D' backward-word        # Ctrl+Left
 
+# History prefix search on up/down arrow (was oh-my-zsh lib/key-bindings.zsh)
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey '^[[A'  up-line-or-beginning-search    # Up
+bindkey '^[[B'  down-line-or-beginning-search  # Down
+bindkey '^[OA'  up-line-or-beginning-search    # Up (xterm/tmux)
+bindkey '^[OB'  down-line-or-beginning-search  # Down (xterm/tmux)
+
 # ── Editor ──────────────────────────────────────────────────────────
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
@@ -94,6 +103,7 @@ fi
 # ── Environment ─────────────────────────────────────────────────────
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin
 export GPG_TTY=$(tty)
+export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 
 # Go
 export PATH=$PATH:/usr/local/go/bin
