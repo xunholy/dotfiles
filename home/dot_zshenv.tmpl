@@ -1,5 +1,9 @@
 # Homebrew
+{{- if eq .chezmoi.os "darwin" }}
 eval "$(/opt/homebrew/bin/brew shellenv)"
+{{- else if eq .chezmoi.os "linux" }}
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{- end }}
 
 # Granted - AWS credential management
 export GRANTED_ALIAS_CONFIGURED="true"
