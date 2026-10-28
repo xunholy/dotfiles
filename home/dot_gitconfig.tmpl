@@ -1,11 +1,19 @@
+{{- $headless := eq (includeTemplate "headless" .) "true" -}}
 [user]
 	email = {{ .email }}
 	name = {{ .name }}
+{{- if $headless }}
+	signingkey = {{ .chezmoi.homeDir }}/.ssh/devbox_signing.pub
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
+{{- else }}
 	signingkey = {{ .chezmoi.homeDir }}/.ssh/{{ .sshKeyName }}.pub
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+{{- end }}
 [commit]
 	gpgsign = true
 [gpg]

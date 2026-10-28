@@ -1,6 +1,6 @@
 # Dotfiles
 
-Cross-platform dotfiles managed with [chezmoi](https://www.chezmoi.io/), targeting **macOS** (work) and **Windows/WSL2** (personal).
+Cross-platform dotfiles managed with [chezmoi](https://www.chezmoi.io/), targeting **macOS** (work), **Windows/WSL2** (personal) and a **headless Linux devbox** (EC2, Debian arm64).
 
 ## What's Managed
 
@@ -33,6 +33,22 @@ Cross-platform dotfiles managed with [chezmoi](https://www.chezmoi.io/), targeti
 
 - **macOS**: SSH key = `github_ed25519`, Homebrew at `/opt/homebrew`, Android Studio JDK
 - **WSL2**: SSH key = `id_ed25519`, Homebrew at `/home/linuxbrew/.linuxbrew`, keychain SSH agent, X11 display, clipboard aliases
+- **Headless Linux** (any Linux that isn't WSL2, see `.chezmoitemplates/headless`): Homebrew at `/home/linuxbrew/.linuxbrew`, zsh set as the login shell, vim as the chezmoi editor, no auto-commit or auto-push
+
+## Headless devbox
+
+The devbox has no SSH agent forwarding and no GitHub SSH key, so a few things differ from the PCs:
+
+- Git talks to GitHub over HTTPS through `gh auth git-credential` instead of rewriting to SSH. Run `gh auth login` once with a fine-grained token.
+- Commits are signed with a box-local key, `~/.ssh/devbox_signing`, generated on first apply. Add the printed public key at https://github.com/settings/ssh/new as a **Signing Key** so GitHub shows commits as verified.
+- `~/.claude` is left alone; it comes from the claude-config repo, as on the PCs.
+- `apt` installs Homebrew's build prerequisites, `zsh` and `git-lfs` before the Homebrew scripts run.
+
+Bootstrap on a fresh box:
+
+```bash
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin init --apply xunholy
+```
 
 ## Shell Plugins
 

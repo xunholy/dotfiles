@@ -72,3 +72,26 @@ packages:
     taps:
     - 'go-task/tap'
     - 'hashicorp/tap'
+  headless:
+    brews:
+    - 'chezmoi'
+    - 'curl'
+    - 'direnv'
+    - 'fzf'
+    - 'gh'
+    - 'git'
+    - 'gnupg'
+    - 'go-task'
+    - 'hashicorp/tap/terraform'
+    - 'helm'
+    - 'jq'
+    - 'kubernetes-cli'
+    - 'kustomize'
+    - 'sops'
+    - 'stern'
+    - 'tmux'
+    - 'wget'
+    - 'yamllint'
+    - 'yq'
+    taps:
+    - 'hashicorp/tap'

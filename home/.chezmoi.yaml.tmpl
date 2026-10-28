@@ -1,5 +1,6 @@
-{{- /* Auto-detect: darwin = work macbook, linux+WSL2 = personal windows */ -}}
+{{- /* Auto-detect: darwin = work macbook, linux+WSL2 = personal windows, other linux = headless devbox */ -}}
 {{- $sshKeyName := "id_ed25519" -}}
+{{- $headless := and (eq .chezmoi.os "linux") (not (.chezmoi.kernel.osrelease | lower | contains "microsoft")) -}}
 {{- if eq .chezmoi.os "darwin" -}}
 {{-   $sshKeyName = "github_ed25519" -}}
 {{- end -}}
@@ -15,9 +16,13 @@ gpg:
   recipient: "095E47AA0B13BA84E7A4E8FB4D5665820FF1D266"
 
 edit:
+{{- if $headless }}
+  command: "vim"
+{{- else }}
   command: "code"
   args: ["--wait"]
+{{- end }}
 
 git:
-  autoCommit: true
-  autoPush: true
+  autoCommit: {{ not $headless }}
+  autoPush: {{ not $headless }}

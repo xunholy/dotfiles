@@ -1,0 +1,12 @@
+{{ if eq (includeTemplate "headless" .) "true" -}}
+#!/bin/bash
+set -euo pipefail
+
+# Homebrew's Linux prerequisites, zsh as the login shell, git-lfs for the gitconfig filter
+sudo apt-get update -qq
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq build-essential procps curl file git git-lfs zsh
+
+if [ "$(getent passwd "$USER" | cut -d: -f7)" != /usr/bin/zsh ]; then
+    sudo chsh -s /usr/bin/zsh "$USER"
+fi
+{{ end -}}

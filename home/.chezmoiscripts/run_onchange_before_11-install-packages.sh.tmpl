@@ -1,10 +1,19 @@
 #!/bin/bash
+{{- $pkgs := index .packages .chezmoi.os }}
+{{- if eq (includeTemplate "headless" .) "true" }}
+{{-   $pkgs = .packages.headless }}
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+{{    range $pkgs.taps -}}
+brew trust --tap {{ . | quote }}
+{{    end -}}
+{{- end }}
 
 brew bundle --file=/dev/stdin <<EOF
-{{ range (index .packages .chezmoi.os).taps -}}
+{{ range $pkgs.taps -}}
 tap {{ . | quote }}
 {{ end -}}
-{{ range (index .packages .chezmoi.os).brews -}}
+{{ range $pkgs.brews -}}
 brew {{ . | quote }}
 {{ end -}}
 {{ if eq .chezmoi.os "darwin" -}}

@@ -2,6 +2,14 @@
 .chezmoiscripts/darwin/**
 {{ end }}
 
+# Powerlevel10k compiles these at runtime inside an exact external
+.zsh/themes/powerlevel10k/**/*.zwc
+
+{{ if eq (includeTemplate "headless" .) "true" }}
+.claude
+.claude/**
+{{ end }}
+
 {{ if ne .chezmoi.os "windows" }}
 .chezmoiscripts/windows/**
 Documents

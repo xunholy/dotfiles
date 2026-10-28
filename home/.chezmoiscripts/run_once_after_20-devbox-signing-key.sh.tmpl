@@ -1,0 +1,11 @@
+{{ if eq (includeTemplate "headless" .) "true" -}}
+#!/bin/bash
+set -euo pipefail
+
+# Commits are signed with a box-local key; there is no agent forwarding to borrow the laptop's key
+key="$HOME/.ssh/devbox_signing"
+[ -f "$key" ] && exit 0
+ssh-keygen -q -t ed25519 -N "" -C "devbox commit signing" -f "$key"
+echo "Add this as a Signing Key at https://github.com/settings/ssh/new :"
+cat "$key.pub"
+{{ end -}}

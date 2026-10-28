@@ -1,0 +1,2 @@
+{{- /* "true" on Linux that isn't WSL2, i.e. the EC2 devbox */ -}}
+{{- and (eq .chezmoi.os "linux") (not (.chezmoi.kernel.osrelease | lower | contains "microsoft")) -}}
