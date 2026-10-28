@@ -41,6 +41,7 @@ The devbox has no SSH agent forwarding and no GitHub SSH key, so a few things di
 
 - Git talks to GitHub over HTTPS through `gh auth git-credential` instead of rewriting to SSH. Run `gh auth login` once with a fine-grained token.
 - Commits are signed with a box-local key, `~/.ssh/devbox_signing`, generated on first apply. Add the printed public key at https://github.com/settings/ssh/new as a **Signing Key** so GitHub shows commits as verified.
+- Claude Code is installed with its native installer on every machine that doesn't already have it; run `claude` once to log in.
 - `~/.claude` is a clone of claude-config, pulled over SSH with a read-only deploy key (`~/.ssh/claude_config_deploy`, host alias `github-claude-config`). On a new box the first apply prints the key; add it with `gh repo deploy-key add <file> --repo xunholy/claude-config` and apply again. Every `chezmoi apply` fast-forwards it. Hooks come from its `setup/install.sh`, except the SessionEnd sync, which pushes and so stays off a read-only box.
 - `apt` installs Homebrew's build prerequisites, `zsh` and `git-lfs` before the Homebrew scripts run.
 
