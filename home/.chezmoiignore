@@ -8,6 +8,8 @@
 {{ if eq (includeTemplate "headless" .) "true" }}
 .claude
 .claude/**
+{{ else }}
+.local/bin/pbcopy
 {{ end }}
 
 {{ if ne .chezmoi.os "windows" }}

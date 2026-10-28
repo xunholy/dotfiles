@@ -1,0 +1,3 @@
+#!/bin/sh
+# Devbox pbcopy: send stdin to the laptop's clipboard as an OSC 52 escape; tmux passes it on
+printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')" > /dev/tty
