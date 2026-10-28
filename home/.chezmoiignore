@@ -10,6 +10,8 @@
 .claude/**
 {{ else }}
 .local/bin/pbcopy
+.granted
+.granted/**
 {{ end }}
 
 {{ if ne .chezmoi.os "windows" }}

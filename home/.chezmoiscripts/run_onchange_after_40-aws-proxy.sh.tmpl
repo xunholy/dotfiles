@@ -1,0 +1,57 @@
+{{ if eq (includeTemplate "headless" .) "true" -}}
+#!/bin/bash
+set -euo pipefail
+
+# The org's SSO IP-lock SCP only accepts WARP/office source IPs, so AWS calls leave through the
+# laptop: `devbox tunnel` exposes a SOCKS proxy on 127.0.0.1:1080, and gost serves HTTP on :3128,
+# sending only *.amazonaws.com through it. Logging stays at error so destinations stay out of the
+# journal on the unencrypted root disk.
+sudo tee /etc/devbox-aws-proxy.yaml >/dev/null <<'EOF'
+log:
+  level: error
+services:
+- name: http
+  addr: 127.0.0.1:3128
+  handler:
+    type: http
+    chain: laptop
+  listener:
+    type: tcp
+chains:
+- name: laptop
+  hops:
+  - name: laptop
+    bypass: aws-only
+    nodes:
+    - name: laptop-socks
+      addr: 127.0.0.1:1080
+      connector:
+        type: socks5
+      dialer:
+        type: tcp
+bypasses:
+- name: aws-only
+  whitelist: true
+  matchers:
+  - "*.amazonaws.com"
+EOF
+
+sudo tee /etc/systemd/system/devbox-aws-proxy.service >/dev/null <<EOF
+[Unit]
+Description=HTTP proxy that sends AWS traffic through the laptop tunnel
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=/home/linuxbrew/.linuxbrew/bin/gost -C /etc/devbox-aws-proxy.yaml
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now devbox-aws-proxy.service
+sudo systemctl restart devbox-aws-proxy.service
+{{ end -}}

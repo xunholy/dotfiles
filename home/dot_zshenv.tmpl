@@ -8,3 +8,10 @@ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 # Granted - AWS credential management
 export GRANTED_ALIAS_CONFIGURED="true"
 alias assume="source assume"
+{{- if eq (includeTemplate "headless" .) "true" }}
+
+# AWS goes out through the laptop's WARP connection (devbox tunnel + gost); Claude's API stays direct
+export HTTPS_PROXY=http://127.0.0.1:3128 https_proxy=http://127.0.0.1:3128
+export NO_PROXY=localhost,127.0.0.1,::1,169.254.169.254,.anthropic.com,.claude.ai,.claude.com
+export no_proxy=$NO_PROXY
+{{- end }}

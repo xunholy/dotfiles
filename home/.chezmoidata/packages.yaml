@@ -74,6 +74,7 @@ packages:
     - 'hashicorp/tap'
   headless:
     brews:
+    - 'awscli'
     - 'chezmoi'
     - 'curl'
     - 'direnv'
@@ -82,6 +83,8 @@ packages:
     - 'git'
     - 'gnupg'
     - 'go-task'
+    - 'gost'
+    - 'granted'
     - 'hashicorp/tap/terraform'
     - 'helm'
     - 'jq'

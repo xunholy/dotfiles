@@ -44,6 +44,7 @@ The devbox has no SSH agent forwarding and no GitHub SSH key, so a few things di
 - Claude Code is installed with its native installer on every machine that doesn't already have it; run `claude` once to log in.
 - `~/.claude` is a clone of claude-config, pulled over SSH with a read-only deploy key (`~/.ssh/claude_config_deploy`, host alias `github-claude-config`). On a new box the first apply prints the key; add it with `gh repo deploy-key add <file> --repo xunholy/claude-config` and apply again. Every `chezmoi apply` fast-forwards it. Hooks come from its `setup/install.sh`, except the SessionEnd sync, which pushes and so stays off a read-only box.
 - `apt` installs Homebrew's build prerequisites, `zsh` and `git-lfs` before the Homebrew scripts run.
+- AWS: the org's SSO IP-lock SCP only accepts WARP/office source IPs, so the box can't call AWS from its own IP. The laptop opens a reverse SOCKS proxy over SSH (port 443 only), and the `devbox-aws-proxy` service (gost on `127.0.0.1:3128`, set as `HTTPS_PROXY` in `.zshenv`) sends only `*.amazonaws.com` through it; everything else, Claude's API included, goes direct. Log in once with `granted sso populate --sso-region ap-southeast-2 https://kickstreaming.awsapps.com/start`, then `assume` as usual. The SSO token sits in granted's file keyring inside the encrypted home.
 
 Bootstrap on a fresh box:
 
