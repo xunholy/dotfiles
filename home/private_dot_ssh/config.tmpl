@@ -1,10 +1,13 @@
+{{- $headless := eq (includeTemplate "headless" .) "true" -}}
 Host *
   AddKeysToAgent yes
 {{- if (eq .chezmoi.os "darwin") }}
   IgnoreUnknown UseKeychain
   UseKeychain yes
 {{- end }}
+{{- if not $headless }}
   IdentityFile ~/.ssh/{{ .sshKeyName }}
+{{- end }}
 
 Host 192.168.*
   UserKnownHostsFile=/dev/null
@@ -13,4 +16,14 @@ Host 192.168.*
 Host github.com
   Hostname ssh.github.com
   Port 443
+{{- if not $headless }}
   IdentityFile ~/.ssh/{{ .sshKeyName }}
+{{- else }}
+
+Host github-claude-config
+  Hostname ssh.github.com
+  Port 443
+  User git
+  IdentityFile ~/.ssh/claude_config_deploy
+  IdentitiesOnly yes
+{{- end }}

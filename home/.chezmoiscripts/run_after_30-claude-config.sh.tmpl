@@ -1,0 +1,39 @@
+{{ if eq (includeTemplate "headless" .) "true" -}}
+#!/bin/bash
+set -euo pipefail
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+# ~/.claude comes from claude-config, read-only through a deploy key (gh holds the work token)
+key="$HOME/.ssh/claude_config_deploy"
+repo="git@github-claude-config:xunholy/claude-config.git"
+[ -f "$key" ] || ssh-keygen -q -t ed25519 -N "" -C "devbox claude-config deploy key" -f "$key"
+grep -qs '^\[ssh.github.com\]:443 ' "$HOME/.ssh/known_hosts" ||
+    curl -fsSL https://api.github.com/meta | jq -r '.ssh_keys[] | "[ssh.github.com]:443 " + .' >> "$HOME/.ssh/known_hosts"
+
+if [ -d "$HOME/.claude/.git" ]; then
+    git -C "$HOME/.claude" pull -q --ff-only || echo "claude-config: pull failed, ~/.claude left as is"
+    exit 0
+fi
+
+if ! git ls-remote -q "$repo" HEAD >/dev/null 2>&1; then
+    echo "Add this read-only deploy key to xunholy/claude-config, then run chezmoi apply:"
+    cat "$key.pub"
+    exit 0
+fi
+
+# ~/.claude may already hold Claude Code's credentials and history; the repo's .gitignore leaves those alone
+mkdir -p "$HOME/.claude"
+git -C "$HOME/.claude" init -q -b main
+git -C "$HOME/.claude" remote add origin "$repo"
+git -C "$HOME/.claude" fetch -q origin main
+git -C "$HOME/.claude" checkout -q -f -B main --track origin/main
+
+"$HOME/.claude/setup/install.sh" >/dev/null
+# No SessionEnd sync here: it commits and pushes, and this box only pulls
+tmp=$(mktemp)
+jq '(.hooks.SessionEnd // []) |= map(select(any(.hooks[]; .command | test("sync-repos")) | not))
+    | if .hooks.SessionEnd == [] then del(.hooks.SessionEnd) else . end' "$HOME/.claude/settings.json" > "$tmp"
+mv "$tmp" "$HOME/.claude/settings.json"
+chmod 600 "$HOME/.claude/settings.json"
+echo "claude-config cloned into ~/.claude and hooks installed (without SessionEnd sync)"
+{{ end -}}
