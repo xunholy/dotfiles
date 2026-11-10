@@ -14,4 +14,7 @@ alias assume="source assume"
 export HTTPS_PROXY=http://127.0.0.1:3128 https_proxy=http://127.0.0.1:3128
 export NO_PROXY=localhost,127.0.0.1,::1,169.254.169.254,.anthropic.com,.claude.ai,.claude.com
 export no_proxy=$NO_PROXY
+
+# ~/.local/bin for non-interactive SSH logins (herdr-core)
+path+=("$HOME/.local/bin")
 {{- end }}
